@@ -1,4 +1,4 @@
-package com.codecool.queryParser;
+package com.codecool.sqlyourcsv.queryParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;

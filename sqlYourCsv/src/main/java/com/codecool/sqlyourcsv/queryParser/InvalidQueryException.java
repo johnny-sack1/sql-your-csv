@@ -1,4 +1,4 @@
-package com.codecool.queryParser;
+package com.codecool.sqlyourcsv.queryParser;
 
 public class InvalidQueryException extends Exception {
     public InvalidQueryException() {
