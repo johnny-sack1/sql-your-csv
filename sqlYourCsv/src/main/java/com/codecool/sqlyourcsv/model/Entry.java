@@ -6,10 +6,6 @@ public class Entry {
 
     private final String[] content;
 
-    public Entry(String[] content) {
-        this.content = content;
-    }
-
     public Entry(String contentString, String delimiter) {
         this.content = contentString.split(delimiter);
     }
