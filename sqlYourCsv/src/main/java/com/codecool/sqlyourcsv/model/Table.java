@@ -19,7 +19,7 @@ public class Table {
         return null;
     }
 
-    private int findColumnIndex(String s) {
+    public int findColumnIndex(String s) {
         String column = Stream.of(this.headers.getContent())
             .filter(w -> w.equalsIgnoreCase(s))
             .findFirst()
