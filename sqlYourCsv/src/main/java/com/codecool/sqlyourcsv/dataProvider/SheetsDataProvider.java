@@ -11,19 +11,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SheetsDataProvider implements IDataProvider {
-    private SheetsQueryParser queryParser = new SheetsQueryParser();
+
+    private final SheetsQueryParser queryParser;
     private Sheets sheetsService;
     private String SPREADSHEET_ID;
+
+    @Autowired
+    public SheetsDataProvider(SheetsQueryParser queryParser) {
+        this.queryParser = queryParser;
+    }
 
     private void establishConnection() {
         try {
             this.sheetsService = SheetsServiceUtil.getSheetsService();
-        }
-        catch (GeneralSecurityException | IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -48,12 +54,11 @@ public class SheetsDataProvider implements IDataProvider {
         BatchGetValuesResponse readResult = null;
         try {
             readResult = sheetsService.spreadsheets().values()
-                    .batchGet(SPREADSHEET_ID)
-                    .setMajorDimension("COLUMNS")
-                    .setRanges(ranges)
-                    .execute();
-        }
-        catch (IOException e) {
+                .batchGet(SPREADSHEET_ID)
+                .setMajorDimension("COLUMNS")
+                .setRanges(ranges)
+                .execute();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -85,16 +90,15 @@ public class SheetsDataProvider implements IDataProvider {
         return colsToDisplay;
     }
 
-
     private List<String> getSheetCols() {
         List<String> cols = new ArrayList<>();
         ValueRange colsVr = null;
         String range = "1:1";
         try {
             colsVr = sheetsService.spreadsheets().values()
-                    .get(SPREADSHEET_ID, range)
-                    .setMajorDimension("ROWS")
-                    .execute();
+                .get(SPREADSHEET_ID, range)
+                .setMajorDimension("ROWS")
+                .execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
