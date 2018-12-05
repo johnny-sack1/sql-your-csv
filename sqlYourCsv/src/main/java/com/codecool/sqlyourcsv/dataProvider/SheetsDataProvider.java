@@ -1,4 +1,4 @@
-package com.codecool.sheetsTest;
+package com.codecool.sqlyourcsv.dataProvider;
 
 import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
 import com.google.api.services.sheets.v4.Sheets;
@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
-public class SheetsDataProvider {
+@Service
+public class SheetsDataProvider implements IDataProvider {
     private SheetsQueryParser queryParser = new SheetsQueryParser();
     private Sheets sheetsService;
     private String SPREADSHEET_ID;

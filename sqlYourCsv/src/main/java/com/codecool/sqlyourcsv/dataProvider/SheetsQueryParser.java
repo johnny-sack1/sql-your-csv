@@ -1,4 +1,4 @@
-package com.codecool.sheetsTest;
+package com.codecool.sqlyourcsv.dataProvider;
 
 import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
 
