@@ -7,8 +7,10 @@ import com.codecool.sqlyourcsv.queryParser.QueryParser;
 import com.codecool.sqlyourcsv.service.FileService;
 
 import java.io.IOException;
+import org.springframework.stereotype.Service;
 
-public class DataProvider {
+@Service
+public class DataProvider implements IDataProvider {
 
     private QueryParser queryParser = new QueryParser();
 
