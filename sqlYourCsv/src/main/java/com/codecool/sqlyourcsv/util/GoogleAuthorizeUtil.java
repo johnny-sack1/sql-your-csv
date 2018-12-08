@@ -1,4 +1,4 @@
-package com.codecool.sqlyourcsv.dataProvider;
+package com.codecool.sqlyourcsv.util;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
