@@ -1,9 +1,10 @@
 package com.codecool.sqlyourcsv.controller;
 
 import com.codecool.sqlyourcsv.dataProvider.IDataProvider;
+import com.codecool.sqlyourcsv.dataProvider.QueryExecutor;
 import com.codecool.sqlyourcsv.model.Table;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,14 @@ public class WebController {
     public String doGet(Model model) throws Exception {
         Table table = this.iDataProvider.query("Sheet1");
         model.addAttribute("table", table);
+        return "index";
+    }
+
+    @PostMapping
+    public String doPost(@RequestParam String query, Model model) throws Exception {
+        Table table = this.iDataProvider.query("Sheet1");
+        QueryExecutor executor = new QueryExecutor(table, query);
+        model.addAttribute("table", executor.execute());
         return "index";
     }
 }
