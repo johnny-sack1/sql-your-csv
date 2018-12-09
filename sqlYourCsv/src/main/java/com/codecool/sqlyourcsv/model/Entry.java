@@ -10,6 +10,10 @@ public class Entry {
         this.content = contentString.split(delimiter);
     }
 
+    public Entry(String[] content) {
+        this.content = content;
+    }
+
     public String[] getContent() {
         return this.content;
     }

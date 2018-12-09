@@ -1,4 +1,4 @@
-package com.codecool.sheetsTest;
+package com.codecool.sqlyourcsv.util;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -20,11 +20,16 @@ import java.util.List;
 public class GoogleAuthorizeUtil {
     public static Credential authorize() throws IOException, GeneralSecurityException {
         InputStream in = GoogleAuthorizeUtil.class.getResourceAsStream("/credentials.json");
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
+        GoogleClientSecrets clientSecrets =
+            GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(),
+                new InputStreamReader(in));
 
         List<String> scopes = Arrays.asList(SheetsScopes.SPREADSHEETS);
 
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), clientSecrets, scopes).setDataStoreFactory(new MemoryDataStoreFactory()).setAccessType("offline").build();
+        GoogleAuthorizationCodeFlow flow =
+            new GoogleAuthorizationCodeFlow.Builder(GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(), clientSecrets, scopes).setDataStoreFactory(
+                new MemoryDataStoreFactory()).setAccessType("offline").build();
 
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
