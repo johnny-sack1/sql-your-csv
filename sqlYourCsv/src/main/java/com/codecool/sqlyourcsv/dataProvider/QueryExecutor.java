@@ -61,36 +61,41 @@ public class QueryExecutor {
         List<String> parsedWhereClause = parser.parseWhereClause(query);
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
-        int value = Integer.parseInt(parsedWhereClause.get(2));
+        String value = parsedWhereClause.get(2);
 
         List<Entry> newTableContent = null;
         int colIndex = table.findColumnIndex(colName);
 
-        switch (operator) {
+        switch (operator.toUpperCase()) {
             case "<":
                 newTableContent = table.getTableContent()
                         .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) < value)
+                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) < Integer.parseInt(value))
                         .collect(Collectors.toList());
                 break;
             case ">":
                 newTableContent = table.getTableContent()
                         .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) > value)
+                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) > Integer.parseInt(value))
                         .collect(Collectors.toList());
                 break;
             case "=":
                 newTableContent = table.getTableContent()
                         .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) == value)
+                        .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
                         .collect(Collectors.toList());
                 break;
             case "<>":
                 newTableContent = table.getTableContent()
                         .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) != value)
+                        .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
                         .collect(Collectors.toList());
                 break;
+            case "LIKE":
+                newTableContent = table.getTableContent()
+                        .stream()
+                        .filter(row -> row.getFieldByColIndex(colIndex).equalsIgnoreCase(value))
+                        .collect(Collectors.toList());
         }
 
         return new Table(table.getHeaders(), newTableContent);

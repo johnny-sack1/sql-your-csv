@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class SheetsQueryParser {
 
     void validate(String query) throws InvalidQueryException {
-        String regex = "(?i:SELECT .+( WHERE \\S+ (<|>|=|<>) \\d+)?;)";
+        String regex = "(?i:SELECT .+( WHERE \\S+ (<|>|=|<>|LIKE) \\S+)?;)";
 
         if (!query.matches(regex)) {
             throw new InvalidQueryException();
@@ -49,7 +49,7 @@ public class SheetsQueryParser {
         // 2nd element is the logical operator
         // 3rd element is the restricting value
 
-        String regex = "(?i:WHERE (\\S+) (<|>|=|<>) (\\d+);)";
+        String regex = "(?i:WHERE (\\S+) (<|>|=|<>|LIKE) (\\S+);)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(query);
         matcher.find();
