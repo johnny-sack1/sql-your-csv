@@ -29,8 +29,7 @@ public class SheetsQueryParser {
     }
 
     List<String> getColsToDisplay(String query) {
-        //List<String> cols = new ArrayList<>();
-        String regex = "(?i:SELECT (.+) WHERE .+;)";
+        String regex = "(?i:SELECT (.+?)( WHERE|;))";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(query);
         matcher.find();
