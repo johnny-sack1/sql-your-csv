@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class SheetsQueryParser {
 
     void validate(String query) throws InvalidQueryException {
-        String regex = "(?i:SELECT .+ FROM \\S+( WHERE \\S+ (<|>|=|<>) \\d+)?;)";
+        String regex = "(?i:SELECT .+( WHERE \\S+ (<|>|=|<>) \\d+)?;)";
 
         if (!query.matches(regex)) {
             throw new InvalidQueryException();
@@ -30,7 +30,7 @@ public class SheetsQueryParser {
 
     List<String> getColsToDisplay(String query) {
         //List<String> cols = new ArrayList<>();
-        String regex = "SELECT (.+) FROM .+";
+        String regex = "(?i:SELECT (.+) WHERE .+;)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(query);
         matcher.find();
@@ -39,7 +39,24 @@ public class SheetsQueryParser {
     }
 
     public boolean hasWhereClause(String query) {
-        String regex = "SELECT .+ FROM .+ WHERE .+";
+        String regex = "(?i:SELECT .+ WHERE .+;)";
         return query.matches(regex);
+    }
+
+    public List<String> parseWhereClause(String query) {
+        List<String> parsedWhereClause = new ArrayList<>();
+        // 1st element in this list is the name of the column being restricted
+        // 2nd element is the logical operator
+        // 3rd element is the restricting value
+
+        String regex = "(?i:WHERE (\\S+) (<|>|=|<>) (\\d+);)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(query);
+        matcher.find();
+        parsedWhereClause.add(matcher.group(1));
+        parsedWhereClause.add(matcher.group(2));
+        parsedWhereClause.add(matcher.group(3));
+
+        return parsedWhereClause;
     }
 }
