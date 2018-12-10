@@ -61,7 +61,7 @@ public class QueryExecutor {
         List<String> parsedWhereClause = parser.parseWhereClause(query);
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
-        String value = parsedWhereClause.get(2);
+        String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
 
         List<Entry> newTableContent = null;
         int colIndex = table.findColumnIndex(colName);
@@ -92,12 +92,16 @@ public class QueryExecutor {
                         .collect(Collectors.toList());
                 break;
             case "LIKE":
+                StringBuilder regex = new StringBuilder();
+                regex.append("(?i:");
+                regex.append(value.replaceAll("%", ".+").replaceAll("_", "."));
+                regex.append(")");
+
                 newTableContent = table.getTableContent()
                         .stream()
-                        .filter(row -> row.getFieldByColIndex(colIndex).equalsIgnoreCase(value))
+                        .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
                         .collect(Collectors.toList());
-        }
-
+                }
         return new Table(table.getHeaders(), newTableContent);
     }
 }
