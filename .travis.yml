@@ -1,0 +1,24 @@
+language: java
+cache:
+- bundler
+install: true
+script:
+  - mvn clean verify
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+branches:
+  only:
+    - master
+deploy:
+  provider: heroku
+  api_key:
+    secure: TjWF/fY0hmF3EIUZmp/stsmU/WR3qJrrwqgqp3i1Nq4m/hn4AWwbwPCfZICSE+cdYVw38WV9xllwUeW2sD6q+kSfGL1NUIviz1yE9zwGcFwWWm7dIq3hfUIbbmX2IM3BLOV7efNzirQG/RbcYqtG8eLb7yUmkqgbgu7VXoNI2Ym4BDXYEcW3dTFaPEXt0tV6N7F5qTRGXbfBD7Tdvj2LYWJ7sff0abVoAqRL5eVq0EFTegIlA8YeN3tNnKaY9aTeGBHzTtzJHzIQ5x+nb75HA/WuW+5mMX/vHc7wuYBc2e0RbzZj6O6bLDaI2hmGjBIt3j0h+hn+KNCl1ddf1sKLsFwfGRKVAjQGcKOo6GgDsFf0XO6VEYbosrpi1PIF7OtBGHWRPnq/dRRnTWN04sZZLbAF1+O/aP16bAX8nMjHUnBrmv/GxGdVLT55YFOjlTsYXwN8rCP69Uffxu9+Ta1JGTfQuhpAjXoRyh/QoG16oBw6agj/tiBKLfKOqKKN45OwScOuxUGeVgogHQsG5GdTVPbgvuAjK7Pvawm7+JQLylbwGBcrNwhIabCsBWy/aDR8nO6/mvaNCoNQfoltZ5dETmLjd/2v5itUlc4i6oFo2dkwo3DuwfR2YcJRvATZccGhfM9vdJkVE/zPamGdeFlCeWQBsWn45Pg8eldCapntvg0=
+
+  app: sql-your-csv
+  on:
+    repo: johnny-sack1/sql-your-csv
+env:
+  global:
+    secure: TjWF/fY0hmF3EIUZmp/stsmU/WR3qJrrwqgqp3i1Nq4m/hn4AWwbwPCfZICSE+cdYVw38WV9xllwUeW2sD6q+kSfGL1NUIviz1yE9zwGcFwWWm7dIq3hfUIbbmX2IM3BLOV7efNzirQG/RbcYqtG8eLb7yUmkqgbgu7VXoNI2Ym4BDXYEcW3dTFaPEXt0tV6N7F5qTRGXbfBD7Tdvj2LYWJ7sff0abVoAqRL5eVq0EFTegIlA8YeN3tNnKaY9aTeGBHzTtzJHzIQ5x+nb75HA/WuW+5mMX/vHc7wuYBc2e0RbzZj6O6bLDaI2hmGjBIt3j0h+hn+KNCl1ddf1sKLsFwfGRKVAjQGcKOo6GgDsFf0XO6VEYbosrpi1PIF7OtBGHWRPnq/dRRnTWN04sZZLbAF1+O/aP16bAX8nMjHUnBrmv/GxGdVLT55YFOjlTsYXwN8rCP69Uffxu9+Ta1JGTfQuhpAjXoRyh/QoG16oBw6agj/tiBKLfKOqKKN45OwScOuxUGeVgogHQsG5GdTVPbgvuAjK7Pvawm7+JQLylbwGBcrNwhIabCsBWy/aDR8nO6/mvaNCoNQfoltZ5dETmLjd/2v5itUlc4i6oFo2dkwo3DuwfR2YcJRvATZccGhfM9vdJkVE/zPamGdeFlCeWQBsWn45Pg8eldCapntvg0=
