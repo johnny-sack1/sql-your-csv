@@ -20,14 +20,6 @@ public class SheetsQueryParser {
         }
     }
 
-    String getSheetId(String query) {
-        String regex = "FROM (\\S+?)(;|WHERE)";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(query);
-        matcher.find();
-        return matcher.group(1);
-    }
-
     List<String> getColsToDisplay(String query) {
         String regex = "(?i:SELECT (.+?)( WHERE|;))";
         Pattern pattern = Pattern.compile(regex);
@@ -42,13 +34,49 @@ public class SheetsQueryParser {
         return query.matches(regex);
     }
 
+    public boolean hasAndClause(String query) {
+        String regex = "(?i:SELECT .+ WHERE .+ AND .+;)";
+        return query.matches(regex);
+    }
+
+    public boolean hasOrClause(String query) {
+        String regex = "(?i:SELECT .+ WHERE .+ OR .+;)";
+        return query.matches(regex);
+    }
+
+    public List<String> parseAndClause(String query) {
+        List<String> parsedAndClause = new ArrayList<>();
+        String regex = "(?i:AND (\\S+) (<|>|=|<>|LIKE) (\\S+);)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(query);
+        matcher.find();
+        parsedAndClause.add(matcher.group(1));
+        parsedAndClause.add(matcher.group(2));
+        parsedAndClause.add(matcher.group(3));
+
+        return parsedAndClause;
+    }
+
+    public List<String> parseOrClause(String query) {
+        List<String> parsedOrClause = new ArrayList<>();
+        String regex = "(?i:OR (\\S+) (<|>|=|<>|LIKE) (\\S+);)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(query);
+        matcher.find();
+        parsedOrClause.add(matcher.group(1));
+        parsedOrClause.add(matcher.group(2));
+        parsedOrClause.add(matcher.group(3));
+
+        return parsedOrClause;
+    }
+
     public List<String> parseWhereClause(String query) {
         List<String> parsedWhereClause = new ArrayList<>();
         // 1st element in this list is the name of the column being restricted
         // 2nd element is the logical operator
         // 3rd element is the restricting value
 
-        String regex = "(?i:WHERE (\\S+) (<|>|=|<>|LIKE) (\\S+);)";
+        String regex = "(?i:WHERE (\\S+) (<|>|=|<>|LIKE) (\\S+?)[ ;])";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(query);
         matcher.find();
