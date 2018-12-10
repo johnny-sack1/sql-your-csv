@@ -3,7 +3,6 @@ package com.codecool.sqlyourcsv.controller;
 import com.codecool.sqlyourcsv.dataProvider.IDataProvider;
 import com.codecool.sqlyourcsv.dataProvider.QueryExecutor;
 import com.codecool.sqlyourcsv.model.Table;
-import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +35,7 @@ public class WebController {
         QueryExecutor executor = new QueryExecutor(this.table, query);
         try {
             table = executor.execute();
-        } catch (InvalidQueryException e) {
+        } catch (Exception e) {
             redirectAttrs.addFlashAttribute("flashError", e);
             return "redirect:/";
         }
