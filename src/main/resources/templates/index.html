@@ -40,6 +40,17 @@
       </table>
     </div>
   </div>
+  <div class="row">
+    <div class="col-12">
+      <div th:if="${fleshMessage}" class="alert alert-success">
+        <strong th:text="${fleshMessage}"></strong>
+      </div>
+      <form action="/refresh" method="POST">
+        <p>Refresh google sheet data</p>
+        <button class="btn btn-success btn-xs">Refresh</button>
+      </form>
+    </div>
+  </div>
 </div>
 </body>
 </html>
