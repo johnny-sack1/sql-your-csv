@@ -3,7 +3,6 @@ package com.codecool.sqlyourcsv.dataProvider;
 import com.codecool.sqlyourcsv.model.Entry;
 import com.codecool.sqlyourcsv.model.Table;
 import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,19 +18,13 @@ public class QueryExecutor {
         this.parser = new SheetsQueryParser();
     }
 
-    public Table execute() {
-        try {
-            parser.validate(query);
-        }
-        catch (InvalidQueryException e) {
-            e.printStackTrace();
-        }
+    public Table execute() throws InvalidQueryException {
+        parser.validate(query);
         List<String> colsToDisplay = parser.getColsToDisplay(query);
         if (parser.hasWhereClause(query)) {
             Table restrictedTable = getContentWithWhereClause();
             return getContentNoWhereClause(restrictedTable, colsToDisplay);
-        }
-        else {
+        } else {
             return getContentNoWhereClause(table, colsToDisplay);
         }
     }
@@ -39,8 +32,7 @@ public class QueryExecutor {
     private Table getContentNoWhereClause(Table table, List<String> colsToDisplay) {
         if (colsToDisplay.size() == 1 && colsToDisplay.get(0).equals("*")) {
             return table;
-        }
-        else {
+        } else {
             Entry headers = new Entry(colsToDisplay.toArray(new String[0]));
             List<Entry> content = new ArrayList<>();
 
@@ -69,33 +61,35 @@ public class QueryExecutor {
         switch (operator.toUpperCase()) {
             case "<":
                 newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) < Integer.parseInt(value))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
+                        < Integer.parseInt(value))
+                    .collect(Collectors.toList());
                 break;
             case ">":
                 newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) > Integer.parseInt(value))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
+                        > Integer.parseInt(value))
+                    .collect(Collectors.toList());
                 break;
             case "=":
                 newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
+                    .collect(Collectors.toList());
                 break;
             case "<>":
                 newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
+                    .collect(Collectors.toList());
                 break;
             case "LIKE":
                 newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> row.getFieldByColIndex(colIndex).equalsIgnoreCase(value))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .filter(row -> row.getFieldByColIndex(colIndex).equalsIgnoreCase(value))
+                    .collect(Collectors.toList());
         }
 
         return new Table(table.getHeaders(), newTableContent);
