@@ -15,8 +15,10 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +37,7 @@ public class GoogleSheetLoader implements IDataProvider {
     private static final String GOOGLE_SHEET_ID = "1txZK-dnJgMJk4Cv9mkJoHv0zZgmt1HLf61BUSHVhySw";
 
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
-        throws Exception {
+        throws IOException {
         InputStream in = GoogleSheetLoader.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets =
             GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
@@ -47,17 +49,17 @@ public class GoogleSheetLoader implements IDataProvider {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    private Table getTable(String tableName) throws Exception {
-        List<List<Object>> values = null;
-        values = getSheetContentForRequired(tableName);
+    private Table getTable(String tableName) throws IOException, GeneralSecurityException {
+        List<List<Object>> values = getSheetContentForRequired(tableName);
         return parseDataFromSheetToTable(values);
     }
 
-    public Table query(String query) throws Exception {
+    public Table query(String query) throws IOException, GeneralSecurityException {
         return getTable(query);
     }
 
-    public List<List<Object>> getSheetContentForRequired(String table) throws Exception {
+    private List<List<Object>> getSheetContentForRequired(String table)
+        throws IOException, GeneralSecurityException {
         if (!table.contains("->")) {
             return GetSheetContent(table);
         }
@@ -81,15 +83,18 @@ public class GoogleSheetLoader implements IDataProvider {
         return new Entry(entryData.toArray(new String[0]));
     }
 
-    private List<List<Object>> GetSheetContent(String tableName) throws Exception {
+    private List<List<Object>> GetSheetContent(String tableName)
+        throws IOException, GeneralSecurityException {
         return handleHttpTransport(GOOGLE_SHEET_ID, tableName);
     }
 
-    private List<List<Object>> GetSheetContent(String id, String tableName) throws Exception {
+    private List<List<Object>> GetSheetContent(String id, String tableName)
+        throws IOException, GeneralSecurityException {
         return handleHttpTransport(id, tableName);
     }
 
-    private List<List<Object>> handleHttpTransport(String id, String tableName) throws Exception {
+    private List<List<Object>> handleHttpTransport(String id, String tableName)
+        throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         final String range = tableName.replace("_", " ").replace(";", "");
         Sheets service =
