@@ -16,24 +16,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class WebController {
 
     private IDataProvider iDataProvider;
+    private Table table;
 
     @Autowired
-    public WebController(IDataProvider iDataProvider) {
+    public WebController(IDataProvider iDataProvider) throws Exception {
         this.iDataProvider = iDataProvider;
+        this.table = this.iDataProvider.query("Sheet1");
     }
 
     @GetMapping("/")
     public String doGet(Model model) throws Exception {
-        Table table = this.iDataProvider.query("Sheet1");
-        model.addAttribute("table", table);
+        model.addAttribute("table", this.table);
         return "index";
     }
 
     @PostMapping
-    public String doPost(RedirectAttributes redirectAttrs, @RequestParam String query, Model model)
-        throws Exception {
-        Table table = this.iDataProvider.query("Sheet1");
-        QueryExecutor executor = new QueryExecutor(table, query);
+    public String doPost(RedirectAttributes redirectAttrs, @RequestParam String query,
+        Model model) {
+        QueryExecutor executor = new QueryExecutor(this.table, query);
         try {
             table = executor.execute();
         } catch (InvalidQueryException e) {
@@ -41,6 +41,18 @@ public class WebController {
             return "redirect:/";
         }
         model.addAttribute("table", table);
+        return "index";
+    }
+
+    @PostMapping("/refresh")
+    public String refresh(RedirectAttributes redirectAttrs) {
+        try {
+            this.table = this.iDataProvider.query("Sheet1");
+            redirectAttrs.addFlashAttribute("fleshMessage","Google Sheet Data Updated Successfully");
+            return "redirect:/";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "index";
     }
 }
