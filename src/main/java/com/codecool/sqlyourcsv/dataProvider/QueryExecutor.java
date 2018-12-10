@@ -51,6 +51,20 @@ public class QueryExecutor {
 
     private Table getContentWithWhereClause() {
         List<String> parsedWhereClause = parser.parseWhereClause(query);
+        Table tableAfterWhereParsing = getContentPureWhereClause(parsedWhereClause);
+
+        if (parser.hasAndClause(query)) {
+            // to implement
+        }
+        else if (parser.hasOrClause(query)) {
+            Table tableAfterOrParsing = getContentPureWhereClause(parser.parseOrClause(query));
+            tableAfterWhereParsing.join(tableAfterOrParsing);
+        }
+
+        return tableAfterWhereParsing;
+    }
+
+    private Table getContentPureWhereClause(List<String> parsedWhereClause) {
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
         String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
@@ -86,17 +100,16 @@ public class QueryExecutor {
                     .collect(Collectors.toList());
                 break;
             case "LIKE":
-                StringBuilder regex = new StringBuilder();
-                regex.append("(?i:");
-                regex.append(value.replaceAll("%", ".+").replaceAll("_", "."));
-                regex.append(")");
 
+                String regex = "(?i:" +
+                        value.replaceAll("%", ".+").replaceAll("_", ".") +
+                        ")";
                 newTableContent = table.getTableContent()
                     .stream()
                     .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
                     .collect(Collectors.toList());
                 }
-
+      
         return new Table(table.getHeaders(), newTableContent);
     }
 }

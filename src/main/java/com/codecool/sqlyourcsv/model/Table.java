@@ -43,4 +43,25 @@ public class Table {
     public void setTableContent(List<Entry> tableContent) {
         this.tableContent = tableContent;
     }
+
+    public void join(Table table) {
+        for (Entry entry : table.getTableContent()) {
+            if (!hasEntry(entry)) {
+                addEntry(entry);
+            }
+        }
+    }
+
+    private boolean hasEntry(Entry entry) {
+        for (Entry tableEntry : this.tableContent) {
+            if (tableEntry.equals(entry)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addEntry(Entry entry) {
+        this.tableContent.add(entry);
+    }
 }
