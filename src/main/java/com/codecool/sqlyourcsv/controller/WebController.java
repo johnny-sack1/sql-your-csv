@@ -4,6 +4,7 @@ import com.codecool.sqlyourcsv.dataProvider.IDataProvider;
 import com.codecool.sqlyourcsv.dataProvider.QueryExecutor;
 import com.codecool.sqlyourcsv.model.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,9 @@ public class WebController {
     private IDataProvider iDataProvider;
     private Table table;
 
+    @Value("${git.commit.id}")
+    private String commitId;
+
     @Autowired
     public WebController(IDataProvider iDataProvider) throws Exception {
         this.iDataProvider = iDataProvider;
@@ -25,6 +29,7 @@ public class WebController {
 
     @GetMapping("/")
     public String doGet(Model model) throws Exception {
+        model.addAttribute("commitId", this.commitId);
         model.addAttribute("table", this.table);
         return "index";
     }
@@ -39,7 +44,8 @@ public class WebController {
             redirectAttrs.addFlashAttribute("flashError", e);
             return "redirect:/";
         }
-        model.addAttribute("table", table);
+        model.addAttribute("commitId", this.commitId);
+        model.addAttribute("table", this.table);
         return "index";
     }
 
@@ -47,7 +53,8 @@ public class WebController {
     public String refresh(RedirectAttributes redirectAttrs) {
         try {
             this.table = this.iDataProvider.query("Sheet1");
-            redirectAttrs.addFlashAttribute("fleshMessage","Google Sheet Data Updated Successfully");
+            redirectAttrs.addFlashAttribute("fleshMessage",
+                "Google Sheet Data Updated Successfully");
             return "redirect:/";
         } catch (Exception e) {
             e.printStackTrace();
