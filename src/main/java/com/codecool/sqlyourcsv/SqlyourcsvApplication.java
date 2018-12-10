@@ -8,7 +8,5 @@ public class SqlyourcsvApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SqlyourcsvApplication.class, args);
-		//DataProvider provider = new DataProvider();
-		//System.out.println(provider.query("SELECT * FROM 50contacts.csv;"));
 	}
 }
