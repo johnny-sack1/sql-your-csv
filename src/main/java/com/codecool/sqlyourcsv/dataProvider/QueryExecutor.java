@@ -51,20 +51,21 @@ public class QueryExecutor {
 
     private Table getContentWithWhereClause() throws IndexOutOfBoundsException {
         List<String> parsedWhereClause = parser.parseWhereClause(query);
-        Table tableAfterWhereParsing = getContentPureWhereClause(parsedWhereClause);
+        Table tableAfterWhereParsing = getContentPureWhereClause(table, parsedWhereClause);
 
         if (parser.hasAndClause(query)) {
-            // to implement
+            Table tableAfterAndParsing = getContentPureWhereClause(tableAfterWhereParsing, parser.parseAndClause(query));
+            return tableAfterAndParsing;
         }
         else if (parser.hasOrClause(query)) {
-            Table tableAfterOrParsing = getContentPureWhereClause(parser.parseOrClause(query));
+            Table tableAfterOrParsing = getContentPureWhereClause(table, parser.parseOrClause(query));
             tableAfterWhereParsing.join(tableAfterOrParsing);
         }
 
         return tableAfterWhereParsing;
     }
 
-    private Table getContentPureWhereClause(List<String> parsedWhereClause) throws IndexOutOfBoundsException {
+    private Table getContentPureWhereClause(Table table, List<String> parsedWhereClause) throws IndexOutOfBoundsException {
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
         String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
@@ -75,29 +76,29 @@ public class QueryExecutor {
         switch (operator.toUpperCase()) {
             case "<":
                 newTableContent = table.getTableContent()
-                    .stream()
-                    .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
-                        < Integer.parseInt(value))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
+                                < Integer.parseInt(value))
+                        .collect(Collectors.toList());
                 break;
             case ">":
                 newTableContent = table.getTableContent()
-                    .stream()
-                    .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
-                        > Integer.parseInt(value))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
+                                > Integer.parseInt(value))
+                        .collect(Collectors.toList());
                 break;
             case "=":
                 newTableContent = table.getTableContent()
-                    .stream()
-                    .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
+                        .collect(Collectors.toList());
                 break;
             case "<>":
                 newTableContent = table.getTableContent()
-                    .stream()
-                    .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
-                    .collect(Collectors.toList());
+                        .stream()
+                        .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
+                        .collect(Collectors.toList());
                 break;
             case "LIKE":
 
@@ -105,11 +106,11 @@ public class QueryExecutor {
                         value.replaceAll("%", ".+").replaceAll("_", ".") +
                         ")";
                 newTableContent = table.getTableContent()
-                    .stream()
-                    .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
-                    .collect(Collectors.toList());
-                }
-      
+                        .stream()
+                        .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
+                        .collect(Collectors.toList());
+        }
+
         return new Table(table.getHeaders(), newTableContent);
     }
 }
