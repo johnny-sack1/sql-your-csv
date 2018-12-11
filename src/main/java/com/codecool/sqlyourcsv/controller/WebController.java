@@ -4,7 +4,6 @@ import com.codecool.sqlyourcsv.dataProvider.IDataProvider;
 import com.codecool.sqlyourcsv.dataProvider.QueryExecutor;
 import com.codecool.sqlyourcsv.model.Table;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +17,6 @@ public class WebController {
     private IDataProvider iDataProvider;
     private Table table;
 
-    @Value("${git.commit.id}")
-    private String commitId;
-
     @Autowired
     public WebController(IDataProvider iDataProvider) throws Exception {
         this.iDataProvider = iDataProvider;
@@ -28,8 +24,7 @@ public class WebController {
     }
 
     @GetMapping("/")
-    public String doGet(Model model) throws Exception {
-        model.addAttribute("commitId", this.commitId);
+    public String doGet(Model model) {
         model.addAttribute("table", this.table);
         return "index";
     }
@@ -40,16 +35,13 @@ public class WebController {
         QueryExecutor executor = new QueryExecutor(this.table, query);
         try {
             table = executor.execute();
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             redirectAttrs.addFlashAttribute("message", "No such column(s)");
             return "redirect:/";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             redirectAttrs.addFlashAttribute("flashError", e);
             return "redirect:/";
         }
-        model.addAttribute("commitId", this.commitId);
         model.addAttribute("table", this.table);
         return "index";
     }
