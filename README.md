@@ -1,4 +1,4 @@
-# SQL your CSV
+# SQL your Google Sheets
 
 The goal was to write a program which will allow users to query their google sheet files using SQL. Google sheet tables should act as tables in the RDBMS.
 
