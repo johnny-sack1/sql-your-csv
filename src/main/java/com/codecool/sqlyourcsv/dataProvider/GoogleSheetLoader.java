@@ -22,10 +22,8 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-@Primary
 @Service
 public class GoogleSheetLoader implements IDataProvider {
     private static final String APPLICATION_NAME = "SQLYourCSV";
