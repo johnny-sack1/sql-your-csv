@@ -14,11 +14,6 @@ public class Table {
         this.tableContent = content;
     }
 
-    public List<String> get(String s) {
-        // TODO: 29/11/2018 Implement
-        return null;
-    }
-
     public int findColumnIndex(String s) {
         String column = Stream.of(this.headers.getContent())
             .filter(w -> w.equalsIgnoreCase(s))
@@ -32,16 +27,8 @@ public class Table {
         return this.headers;
     }
 
-    public void setHeaders(Entry headers) {
-        this.headers = headers;
-    }
-
     public List<Entry> getTableContent() {
         return this.tableContent;
-    }
-
-    public void setTableContent(List<Entry> tableContent) {
-        this.tableContent = tableContent;
     }
 
     public void join(Table table) {

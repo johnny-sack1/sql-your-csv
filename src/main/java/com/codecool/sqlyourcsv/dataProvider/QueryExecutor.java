@@ -3,17 +3,24 @@ package com.codecool.sqlyourcsv.dataProvider;
 import com.codecool.sqlyourcsv.filter.Operation;
 import com.codecool.sqlyourcsv.model.Entry;
 import com.codecool.sqlyourcsv.model.Table;
-import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
+import com.codecool.sqlyourcsv.exception.InvalidQueryException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class QueryExecutor {
+
     private SheetsQueryParser parser;
     private Table table;
     private String query;
     private HashMap<String, Operation> operations;
+
+    @Autowired
+    public QueryExecutor(SheetsQueryParser parser) {
+        this.parser = parser;
+    }
 
     public QueryExecutor(Table table, String query) {
         this.table = table;
@@ -59,9 +66,7 @@ public class QueryExecutor {
         Table tableAfterWhereParsing = getContentPureWhereClause(table, parsedWhereClause);
 
         if (parser.hasAndClause(query)) {
-            Table tableAfterAndParsing =
-                getContentPureWhereClause(tableAfterWhereParsing, parser.parseAndClause(query));
-            return tableAfterAndParsing;
+            return getContentPureWhereClause(tableAfterWhereParsing, parser.parseAndClause(query));
         } else if (parser.hasOrClause(query)) {
             Table tableAfterOrParsing =
                 getContentPureWhereClause(table, parser.parseOrClause(query));
@@ -77,7 +82,7 @@ public class QueryExecutor {
         String operator = parsedWhereClause.get(1);
         String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
 
-        List<Entry> newTableContent = null;
+        List<Entry> newTableContent;
         int colIndex = table.findColumnIndex(colName);
 
         newTableContent =
@@ -116,7 +121,7 @@ public class QueryExecutor {
                 ")";
             return table.getTableContent()
                 .stream()
-                .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
+                .filter(row -> row.getFieldByColIndex(colIndex).matches(regex))
                 .collect(Collectors.toList());
         });
     }
