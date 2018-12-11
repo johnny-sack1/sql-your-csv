@@ -1,9 +1,11 @@
 package com.codecool.sqlyourcsv.dataProvider;
 
+import com.codecool.sqlyourcsv.filter.Operation;
 import com.codecool.sqlyourcsv.model.Entry;
 import com.codecool.sqlyourcsv.model.Table;
 import com.codecool.sqlyourcsv.queryParser.InvalidQueryException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,11 +13,13 @@ public class QueryExecutor {
     private SheetsQueryParser parser;
     private Table table;
     private String query;
+    private HashMap<String, Operation> operations;
 
     public QueryExecutor(Table table, String query) {
         this.table = table;
         this.query = query;
         this.parser = new SheetsQueryParser();
+        populateOperationMap();
     }
 
     public Table execute() throws InvalidQueryException, IndexOutOfBoundsException {
@@ -29,7 +33,8 @@ public class QueryExecutor {
         }
     }
 
-    private Table getContentNoWhereClause(Table table, List<String> colsToDisplay) throws IndexOutOfBoundsException{
+    private Table getContentNoWhereClause(Table table, List<String> colsToDisplay)
+        throws IndexOutOfBoundsException {
         if (colsToDisplay.size() == 1 && colsToDisplay.get(0).equals("*")) {
             return table;
         } else {
@@ -54,18 +59,20 @@ public class QueryExecutor {
         Table tableAfterWhereParsing = getContentPureWhereClause(table, parsedWhereClause);
 
         if (parser.hasAndClause(query)) {
-            Table tableAfterAndParsing = getContentPureWhereClause(tableAfterWhereParsing, parser.parseAndClause(query));
+            Table tableAfterAndParsing =
+                getContentPureWhereClause(tableAfterWhereParsing, parser.parseAndClause(query));
             return tableAfterAndParsing;
-        }
-        else if (parser.hasOrClause(query)) {
-            Table tableAfterOrParsing = getContentPureWhereClause(table, parser.parseOrClause(query));
+        } else if (parser.hasOrClause(query)) {
+            Table tableAfterOrParsing =
+                getContentPureWhereClause(table, parser.parseOrClause(query));
             tableAfterWhereParsing.join(tableAfterOrParsing);
         }
 
         return tableAfterWhereParsing;
     }
 
-    private Table getContentPureWhereClause(Table table, List<String> parsedWhereClause) throws IndexOutOfBoundsException {
+    private Table getContentPureWhereClause(Table table, List<String> parsedWhereClause)
+        throws IndexOutOfBoundsException {
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
         String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
@@ -73,44 +80,44 @@ public class QueryExecutor {
         List<Entry> newTableContent = null;
         int colIndex = table.findColumnIndex(colName);
 
-        switch (operator.toUpperCase()) {
-            case "<":
-                newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
-                                < Integer.parseInt(value))
-                        .collect(Collectors.toList());
-                break;
-            case ">":
-                newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
-                                > Integer.parseInt(value))
-                        .collect(Collectors.toList());
-                break;
-            case "=":
-                newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
-                        .collect(Collectors.toList());
-                break;
-            case "<>":
-                newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
-                        .collect(Collectors.toList());
-                break;
-            case "LIKE":
-
-                String regex = "(?i:" +
-                        value.replaceAll("%", ".+").replaceAll("_", ".") +
-                        ")";
-                newTableContent = table.getTableContent()
-                        .stream()
-                        .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
-                        .collect(Collectors.toList());
-        }
+        newTableContent =
+            this.operations.get(operator.toUpperCase()).performOperation(table, colIndex, value);
 
         return new Table(table.getHeaders(), newTableContent);
+    }
+
+    private void populateOperationMap() {
+        this.operations = new HashMap<>();
+        this.operations.put("<", (table, colIndex, value) -> table.getTableContent()
+            .stream()
+            .filter(
+                row -> Integer.parseInt(row.getFieldByColIndex(colIndex)) < Integer.parseInt(value))
+            .collect(Collectors.toList()));
+
+        this.operations.put(">", (table, colIndex, value) -> table.getTableContent()
+            .stream()
+            .filter(row -> Integer.parseInt(row.getFieldByColIndex(colIndex))
+                > Integer.parseInt(value))
+            .collect(Collectors.toList()));
+
+        this.operations.put("=", (table, colIndex, value) -> table.getTableContent()
+            .stream()
+            .filter(row -> row.getFieldByColIndex(colIndex).equals(value))
+            .collect(Collectors.toList()));
+
+        this.operations.put("<>", (table, colIndex, value) -> table.getTableContent()
+            .stream()
+            .filter(row -> !row.getFieldByColIndex(colIndex).equals(value))
+            .collect(Collectors.toList()));
+
+        this.operations.put("LIKE", (table, colIndex, value) -> {
+            String regex = "(?i:" +
+                value.replaceAll("%", ".+").replaceAll("_", ".") +
+                ")";
+            return table.getTableContent()
+                .stream()
+                .filter(row -> row.getFieldByColIndex(colIndex).matches(regex.toString()))
+                .collect(Collectors.toList());
+        });
     }
 }
