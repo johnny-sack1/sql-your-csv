@@ -18,7 +18,7 @@ public class QueryExecutor {
         this.parser = new SheetsQueryParser();
     }
 
-    public Table execute() throws InvalidQueryException {
+    public Table execute() throws InvalidQueryException, IndexOutOfBoundsException {
         parser.validate(query);
         List<String> colsToDisplay = parser.getColsToDisplay(query);
         if (parser.hasWhereClause(query)) {
@@ -29,7 +29,7 @@ public class QueryExecutor {
         }
     }
 
-    private Table getContentNoWhereClause(Table table, List<String> colsToDisplay) {
+    private Table getContentNoWhereClause(Table table, List<String> colsToDisplay) throws IndexOutOfBoundsException{
         if (colsToDisplay.size() == 1 && colsToDisplay.get(0).equals("*")) {
             return table;
         } else {
@@ -49,7 +49,7 @@ public class QueryExecutor {
         }
     }
 
-    private Table getContentWithWhereClause() {
+    private Table getContentWithWhereClause() throws IndexOutOfBoundsException {
         List<String> parsedWhereClause = parser.parseWhereClause(query);
         Table tableAfterWhereParsing = getContentPureWhereClause(parsedWhereClause);
 
@@ -64,7 +64,7 @@ public class QueryExecutor {
         return tableAfterWhereParsing;
     }
 
-    private Table getContentPureWhereClause(List<String> parsedWhereClause) {
+    private Table getContentPureWhereClause(List<String> parsedWhereClause) throws IndexOutOfBoundsException {
         String colName = parsedWhereClause.get(0);
         String operator = parsedWhereClause.get(1);
         String value = parsedWhereClause.get(2).replaceAll("^\"|\"$", "");
