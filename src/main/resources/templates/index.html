@@ -17,6 +17,9 @@
     <div class="col-12 flex mt-4">
       <form action="/" method="POST">
         <div class="from-group">
+          <div th:if="${message}">
+            <strong th:text="${message}" class="alert alert-danger"></strong>
+          </div>
           <div th:if="${flashError}" class="alert alert-danger">
             <strong th:text="${flashError.getLocalizedMessage()}"></strong>
           </div>

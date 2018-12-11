@@ -40,7 +40,12 @@ public class WebController {
         QueryExecutor executor = new QueryExecutor(this.table, query);
         try {
             table = executor.execute();
-        } catch (Exception e) {
+        }
+        catch (IndexOutOfBoundsException e) {
+            redirectAttrs.addFlashAttribute("message", "No such column(s)");
+            return "redirect:/";
+        }
+        catch (Exception e) {
             redirectAttrs.addFlashAttribute("flashError", e);
             return "redirect:/";
         }
